@@ -1,27 +1,22 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Layout from "./pages/Layout";
-import Dashboard from "./pages/Dashboard";
-import WriteArticle from "./pages/WriteArticle";
-import BlogTitles from "./pages/BlogTitles";
-import GenerateImages from "./pages/GenerateImages";
-import RemoveBackground from "./pages/RemoveBackground";
-import RemoveObject from "./pages/RemoveObject";
-import ReviewResume from "./pages/ReviewResume";
-import Community from "./pages/Community";
-import { useAuth } from "@clerk/clerk-react";
-import { useEffect } from "react";
+import Home from "./pages/Home.jsx";
+import Layout from "./pages/Layout.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import WriteArticle from "./pages/WriteArticle.jsx";
+import BlogTitles from "./pages/BlogTitles.jsx";
+import GenerateImages from "./pages/GenerateImages.jsx";
+import RemoveBackground from "./pages/RemoveBackground.jsx";
+import RemoveObject from "./pages/RemoveObject.jsx";
+import ReviewResume from "./pages/ReviewResume.jsx";
+import Community from "./pages/Community.jsx";
+
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
-  const { getToken } = useAuth();
-
-  useEffect(() => {
-    getToken().then((token) => console.log(token));
-  }, []);
-
   return (
     <div>
+      <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/ai" element={<Layout />}>
