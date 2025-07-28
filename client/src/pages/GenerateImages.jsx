@@ -50,6 +50,7 @@ const GenerateImages = () => {
       console.error(error.message);
       toast.error(error.message);
     }
+    setLoading(false);
   };
 
   return (

@@ -5,6 +5,11 @@ import axios from "axios";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import pdf from "pdf-parse/lib/pdf-parse.js";
+import Together from "together-ai";
+
+const together = new Together({
+  apiKey: process.env.TOGETHER_API_KEY,
+});
 
 const AI = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -110,26 +115,17 @@ export const generateImage = async (req, res) => {
       });
     }
 
-    const formData = new FormData();
-    formData.append("prompt", prompt);
+    const response = await together.images.create({
+      model: "black-forest-labs/FLUX.1-schnell-Free",
+      prompt: prompt,
+      width: 1024, // optional
+      height: 1024, // optional
+      response_format: "b64_json",
+    });
 
-    const { data } = await axios.post(
-      "https://clipdrop-api.co/text-to-image/v1",
-      formData,
-      {
-        headers: {
-          "x-api-key": process.env.CLIPDROP_API_KEY,
-        },
-        responseType: "arraybuffer",
-      }
-    );
-
-    const base64Image = `data:image/png;base64,${Buffer.from(
-      data,
-      "binary"
-    ).toString("base64")}}`;
-
-    const { secure_url } = await cloudinary.uploader.upload(base64Image);
+    const base64Image = response.data[0].b64_json;
+    const imageDataURI = `data:image/png;base64,${base64Image}`;
+    const { secure_url } = await cloudinary.uploader.upload(imageDataURI);
 
     await sql`INSERT INTO creations (user_id, prompt, content, type, publish)
     VALUES (${userId}, ${prompt}, ${secure_url}, 'image', ${publish ?? false})`;
@@ -145,7 +141,7 @@ export const generateImage = async (req, res) => {
 export const removeImageBackground = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const { image } = req.file;
+    const image = req.file;
     const plan = req.plan;
 
     if (plan !== "premium") {
