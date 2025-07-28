@@ -11,19 +11,14 @@ const app = express();
 await connectCloudinary();
 
 // Middlewares
-app.use(cors(
-    {
-    origin: "http://localhost:5173",
-    credentials: true
-}
-));
+app.use(cors());
 app.use(express.json());
 app.use(clerkMiddleware());
 
 //Routes
 app.get("/", (req, res) => res.send("Server is Live!"));
 
-app.use(requireAuth);
+app.use(requireAuth());
 app.use("/api/ai", aiRouter);
 app.use("/api/user", userRouter);
 

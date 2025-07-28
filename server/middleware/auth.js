@@ -7,10 +7,6 @@ export const auth = async (req, res, next) => {
     const { userId, has } = await req.auth();
     const hasPremiumPlan = await has({ plan: "premium" });
 
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized: No user ID found" });
-    }
-
     const user = await clerkClient.users.getUser(userId);
 
     if (!hasPremiumPlan && user.privateMetadata.free_usage) {
