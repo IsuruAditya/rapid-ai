@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import pdf from "pdf-parse/lib/pdf-parse.js";
 import Together from "together-ai";
+import { buffer } from "stream/consumers";
 
 const together = new Together({
   apiKey: process.env.TOGETHER_API_KEY,
@@ -174,7 +175,7 @@ export const removeImageObject = async (req, res) => {
   try {
     const { userId } = req.auth();
     const { object } = req.body;
-    const { image } = req.file;
+    const  image  = req.file;
     const plan = req.plan;
 
     if (plan !== "premium") {
@@ -207,7 +208,7 @@ export const removeImageObject = async (req, res) => {
 export const reviewResume = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const { resume } = req.file;
+    const resume  = req.file;
     const plan = req.plan;
 
     if (plan !== "premium") {
@@ -225,7 +226,7 @@ export const reviewResume = async (req, res) => {
       });
     }
 
-    const dataBuffer = fs.writeFileSync(resume.path);
+    const dataBuffer = fs.readFileSync(resume.path);
     const pdfData = await pdf(dataBuffer);
 
     const prompt = `Review the following resume and provide constructive feedback on its strength, weaknesses, and areas for improvement. Resume Content: \n\n ${pdfData.text}`;
